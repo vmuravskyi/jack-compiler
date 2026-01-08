@@ -1,4 +1,4 @@
-package main;
+package main.project_10;
 
 import java.io.BufferedWriter;
 import java.io.Closeable;

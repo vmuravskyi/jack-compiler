@@ -1,4 +1,4 @@
-package main;
+package main.project_11;
 
 import java.io.IOException;
 import java.nio.file.*;
@@ -6,13 +6,13 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-public class JackAnalyzer {
+public class JackCompiler {
 
     public static void main(String[] args) {
         if (args.length != 1) {
-            System.err.println("Usage: JackAnalyzer <source>");
+            System.err.println("Usage: JackCompiler <source>");
             System.err.println(
-                "  where <source> is either Xxx.jack or a directory containing .jack files");
+                "  <source> is either Xxx.jack or a directory containing .jack files");
             System.exit(1);
         }
 
@@ -20,14 +20,12 @@ public class JackAnalyzer {
 
         try {
             if (Files.isDirectory(source)) {
-                List<Path> jackFiles = listJackFiles(source);
-                for (Path jackFile : jackFiles) {
+                for (Path jackFile : listJackFiles(source)) {
                     compileOne(jackFile);
                 }
             } else {
                 if (!source.toString().toLowerCase().endsWith(".jack")) {
-                    throw new IllegalArgumentException(
-                        "Input file must have .jack extension: " + source);
+                    throw new IllegalArgumentException("Input file must be .jack: " + source);
                 }
                 compileOne(source);
             }
@@ -38,20 +36,21 @@ public class JackAnalyzer {
     }
 
     private static void compileOne(Path jackFile) throws IOException {
-        Path outXml = outputXmlPathFor(jackFile);
+        Path outVm = outputVmPathFor(jackFile);
 
         JackTokenizer tokenizer = new JackTokenizer(jackFile);
-        try (CompilationEngine engine = new CompilationEngine(tokenizer, outXml)) {
+        try (VMWriter vm = new VMWriter(outVm)) {
+            CompilationEngine engine = new CompilationEngine(tokenizer, vm);
             engine.compileClass();
         }
 
-        System.out.println("Wrote: " + outXml);
+        System.out.println("Wrote: " + outVm);
     }
 
-    private static Path outputXmlPathFor(Path jackFile) {
+    private static Path outputVmPathFor(Path jackFile) {
         String name = jackFile.getFileName().toString();
         String base = name.substring(0, name.length() - ".jack".length());
-        return jackFile.getParent().resolve(base + ".xml");
+        return jackFile.getParent().resolve(base + ".vm");
     }
 
     private static List<Path> listJackFiles(Path dir) throws IOException {

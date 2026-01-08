@@ -1,4 +1,4 @@
-package main;
+package main.project_10;
 
 public final class XMLUtil {
 

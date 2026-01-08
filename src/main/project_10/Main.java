@@ -1,4 +1,4 @@
-package main;
+package main.project_10;
 
 public class Main {
 
@@ -16,4 +16,5 @@ public class Main {
         // Delegate everything to JackAnalyzer
         JackAnalyzer.main(args);
     }
+
 }
